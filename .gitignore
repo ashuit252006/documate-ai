@@ -1,0 +1,7 @@
+venv/
+.env
+firebase-key.json
+accountkey.json
+__pycache__/
+uploads/
+*.pyc

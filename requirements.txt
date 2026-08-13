@@ -1,0 +1,7 @@
+Flask
+firebase-admin
+python-dotenv
+google-genai
+Werkzeug
+pypdf
+gunicorngit 

@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DocuMate AI</title>
+
+    <style>
+
+        /* =========================================
+           BASIC RESET
+        ========================================= */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        /* =========================================
+           BODY
+        ========================================= */
+
+        body {
+
+            font-family: Arial, Helvetica, sans-serif;
+
+            min-height: 100vh;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #dce8f5,
+                    #f4f7fb
+                );
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            padding: 25px;
+        }
+
+
+        /* =========================================
+           MAIN CHAT CONTAINER
+        ========================================= */
+
+        .chat-container {
+
+            width: 900px;
+
+            max-width: 95vw;
+
+            height: 90vh;
+
+            min-height: 650px;
+
+            background: #ffffff;
+
+            border-radius: 22px;
+
+            overflow: hidden;
+
+            display: flex;
+
+            flex-direction: column;
+
+            box-shadow:
+                0 20px 60px
+                rgba(11, 31, 58, 0.22);
+        }
+
+
+        /* =========================================
+           HEADER
+        ========================================= */
+
+        .header {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #071a33,
+                    #0b2d52
+                );
+
+            color: white;
+
+            padding: 24px 30px;
+
+            text-align: center;
+
+            font-size: 30px;
+
+            font-weight: bold;
+
+            letter-spacing: 0.5px;
+        }
+
+
+        .header-subtitle {
+
+            margin-top: 7px;
+
+            font-size: 14px;
+
+            font-weight: normal;
+
+            color: #c9d8e8;
+        }
+
+
+        /* =========================================
+           CHAT MESSAGE AREA
+        ========================================= */
+
+        #messages {
+
+            flex: 1;
+
+            height: auto;
+
+            padding: 30px;
+
+            overflow-y: auto;
+
+            background: #f4f7fb;
+
+            scroll-behavior: smooth;
+        }
+
+
+        /* =========================================
+           USER MESSAGE
+        ========================================= */
+
+        .user {
+
+            display: flex;
+
+            justify-content: flex-end;
+
+            margin: 15px 0;
+        }
+
+
+        .user-message {
+
+            max-width: 75%;
+
+            background: #123b63;
+
+            color: white;
+
+            padding: 14px 18px;
+
+            border-radius:
+                18px
+                18px
+                4px
+                18px;
+
+            line-height: 1.6;
+
+            font-size: 16px;
+
+            word-wrap: break-word;
+
+            box-shadow:
+                0 4px 12px
+                rgba(18, 59, 99, 0.18);
+        }
+
+
+        /* =========================================
+           BOT MESSAGE
+        ========================================= */
+
+        .bot {
+
+            display: flex;
+
+            justify-content: flex-start;
+
+            margin: 18px 0;
+        }
+
+
+        .bot-message {
+
+            max-width: 82%;
+
+            background: #ffffff;
+
+            color: #172033;
+
+            padding: 20px 22px;
+
+            border-radius:
+                18px
+                18px
+                18px
+                4px;
+
+            border: 1px solid #d6e0eb;
+
+            line-height: 1.7;
+
+            font-size: 16px;
+
+            word-wrap: break-word;
+
+            white-space: pre-wrap;
+
+            box-shadow:
+                0 5px 18px
+                rgba(11, 31, 58, 0.08);
+        }
+
+
+        /* =========================================
+           BOT / USER LABEL
+        ========================================= */
+
+        .message-label {
+
+            font-weight: bold;
+
+            display: block;
+
+            margin-bottom: 6px;
+        }
+
+
+        /* =========================================
+           UPLOAD SECTION
+        ========================================= */
+
+        .document-upload {
+
+            padding: 20px 30px;
+
+            background: #edf3f9;
+
+            border-top: 1px solid #d5dfeb;
+        }
+
+
+        .upload-title {
+
+            color: #0b1f3a;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            margin-bottom: 12px;
+        }
+
+
+        .upload-row {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+
+        /* =========================================
+           FILE INPUT
+        ========================================= */
+
+        .document-upload input[type="file"] {
+
+            flex: 1;
+
+            min-width: 0;
+
+            padding: 11px;
+
+            background: white;
+
+            border: 1px solid #b9c8d9;
+
+            border-radius: 10px;
+
+            font-size: 14px;
+
+            color: #26384d;
+        }
+
+
+        /* =========================================
+           UPLOAD BUTTON
+        ========================================= */
+
+        .upload-button {
+
+            padding: 12px 22px;
+
+            background: #0b1f3a;
+
+            color: white;
+
+            border: none;
+
+            border-radius: 10px;
+
+            font-size: 15px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+
+        .upload-button:hover {
+
+            background: #123b63;
+
+            transform: translateY(-1px);
+        }
+
+
+        /* =========================================
+           CHAT INPUT AREA
+        ========================================= */
+
+        .input-area {
+
+            display: flex;
+
+            gap: 10px;
+
+            padding: 18px 25px;
+
+            background: white;
+
+            border-top: 1px solid #d5dfeb;
+        }
+
+
+        /* =========================================
+           MESSAGE INPUT
+        ========================================= */
+
+        .input-area input[type="text"] {
+
+            flex: 1;
+
+            min-width: 0;
+
+            padding: 16px 18px;
+
+            border: 1px solid #b9c8d9;
+
+            border-radius: 12px;
+
+            outline: none;
+
+            font-size: 16px;
+
+            color: #172033;
+
+            background: #f8fafc;
+
+            transition: 0.2s;
+        }
+
+
+        .input-area input[type="text"]:focus {
+
+            border-color: #123b63;
+
+            background: white;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(18, 59, 99, 0.10);
+        }
+
+
+        /* =========================================
+           SEND BUTTON
+        ========================================= */
+
+        .send-button {
+
+            padding: 0 28px;
+
+            background: #0b1f3a;
+
+            color: white;
+
+            border: none;
+
+            border-radius: 12px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+
+        .send-button:hover {
+
+            background: #123b63;
+
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 6px 15px
+                rgba(11, 31, 58, 0.22);
+        }
+
+
+        /* =========================================
+           SCROLLBAR
+        ========================================= */
+
+        #messages::-webkit-scrollbar {
+
+            width: 8px;
+        }
+
+
+        #messages::-webkit-scrollbar-track {
+
+            background: #e4ebf3;
+
+            border-radius: 10px;
+        }
+
+
+        #messages::-webkit-scrollbar-thumb {
+
+            background: #91a4ba;
+
+            border-radius: 10px;
+        }
+
+
+        #messages::-webkit-scrollbar-thumb:hover {
+
+            background: #61778f;
+        }
+
+
+        /* =========================================
+           MOBILE RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 700px) {
+
+            body {
+
+                padding: 10px;
+            }
+
+
+            .chat-container {
+
+                width: 100%;
+
+                max-width: 100%;
+
+                height: 95vh;
+
+                min-height: 600px;
+
+                border-radius: 16px;
+            }
+
+
+            .header {
+
+                font-size: 23px;
+
+                padding: 20px;
+            }
+
+
+            #messages {
+
+                padding: 18px;
+            }
+
+
+            .document-upload {
+
+                padding: 16px;
+            }
+
+
+            .upload-row {
+
+                flex-direction: column;
+
+                align-items: stretch;
+            }
+
+
+            .upload-button {
+
+                width: 100%;
+            }
+
+
+            .user-message {
+
+                max-width: 88%;
+            }
+
+
+            .bot-message {
+
+                max-width: 92%;
+            }
+
+
+            .input-area {
+
+                padding: 12px;
+            }
+
+
+            .input-area input[type="text"] {
+
+                padding: 13px;
+            }
+
+
+            .send-button {
+
+                padding: 0 18px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================
+         MAIN CONTAINER
+    ========================================== -->
+
+    <div class="chat-container">
+
+
+        <!-- =====================================
+             HEADER
+        ====================================== -->
+
+        <div class="header">
+
+            🤖 DocuMate AI
+
+            <div class="header-subtitle">
+                Intelligent Document Question & Answer System
+            </div>
+
+        </div>
+
+
+        <!-- =====================================
+             CHAT MESSAGES
+        ====================================== -->
+
+        <div id="messages"></div>
+
+
+        <!-- =====================================
+             PDF UPLOAD
+        ====================================== -->
+
+        <div class="document-upload">
+
+            <div class="upload-title">
+
+                📄 Upload Your Document
+
+            </div>
+
+
+            <div class="upload-row">
+
+                <input
+                    type="file"
+                    id="documentFile"
+                    name="documentFile"
+                    accept=".pdf,application/pdf"
+                >
+
+
+                <button
+                    class="upload-button"
+                    onclick="uploadDocument()"
+                >
+
+                    Upload PDF
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================
+             CHAT INPUT
+        ====================================== -->
+
+        <div class="input-area">
+
+            <input
+                type="text"
+                id="messageInput"
+                placeholder="Ask a question about your document..."
+                onkeydown="handleEnter(event)"
+            >
+
+
+            <button
+                class="send-button"
+                onclick="sendMessage()"
+            >
+
+                Send
+
+            </button>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =========================================
+         JAVASCRIPT
+    ========================================== -->
+
+    <script>
+
+
+        /* =========================================
+           PDF UPLOAD
+        ========================================= */
+
+        async function uploadDocument() {
+
+
+            const fileInput =
+                document.getElementById("documentFile");
+
+
+            if (fileInput.files.length === 0) {
+
+                alert("Please select a PDF file first.");
+
+                return;
+            }
+
+
+            const file = fileInput.files[0];
+
+
+            if (!file.name.toLowerCase().endsWith(".pdf")) {
+
+                alert("Please select a PDF file only.");
+
+                return;
+            }
+
+
+            const formData = new FormData();
+
+
+            formData.append(
+                "documentFile",
+                file
+            );
+
+
+            try {
+
+
+                const response = await fetch(
+                    "/upload",
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+
+                const data =
+                    await response.json();
+
+
+                alert(data.message);
+
+
+                if (data.success) {
+
+                    const messages =
+                        document.getElementById("messages");
+
+
+                    messages.innerHTML += `
+
+                        <div class="bot">
+
+                            <div class="bot-message">
+
+                                <span class="message-label">
+                                    🤖 DocuMate AI
+                                </span>
+
+                                📄 <b>${file.name}</b> uploaded successfully.
+
+                                <br><br>
+
+                                You can now ask questions about this document.
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+
+                    messages.scrollTop =
+                        messages.scrollHeight;
+                }
+
+
+            }
+            catch (error) {
+
+
+                console.error(
+                    "Upload Error:",
+                    error
+                );
+
+
+                alert(
+                    "Something went wrong while uploading the PDF."
+                );
+            }
+
+        }
+
+
+
+        /* =========================================
+           SEND MESSAGE
+        ========================================= */
+
+        async function sendMessage() {
+
+
+            const input =
+                document.getElementById("messageInput");
+
+
+            const message =
+                input.value.trim();
+
+
+            if (message === "") {
+
+                return;
+            }
+
+
+            const messages =
+                document.getElementById("messages");
+
+
+            /* USER MESSAGE */
+
+            messages.innerHTML += `
+
+                <div class="user">
+
+                    <div class="user-message">
+
+                        <span class="message-label">
+                            You
+                        </span>
+
+                        ${escapeHTML(message)}
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            input.value = "";
+
+
+            messages.scrollTop =
+                messages.scrollHeight;
+
+
+            try {
+
+
+                const response =
+                    await fetch(
+                        "/chat",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                message: message
+                            })
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                /* BOT MESSAGE */
+
+                messages.innerHTML += `
+
+                    <div class="bot">
+
+                        <div class="bot-message">
+
+                            <span class="message-label">
+                                🤖 DocuMate AI
+                            </span>
+
+                            ${formatBotAnswer(data.reply)}
+
+                        </div>
+
+                    </div>
+
+                `;
+
+
+                messages.scrollTop =
+                    messages.scrollHeight;
+
+
+            }
+            catch (error) {
+
+
+                console.error(
+                    "Chat Error:",
+                    error
+                );
+
+
+                messages.innerHTML += `
+
+                    <div class="bot">
+
+                        <div class="bot-message">
+
+                            <span class="message-label">
+                                🤖 DocuMate AI
+                            </span>
+
+                            Sorry, something went wrong.
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+
+        }
+
+
+
+        /* =========================================
+           ENTER KEY
+        ========================================= */
+
+        function handleEnter(event) {
+
+            if (event.key === "Enter") {
+
+                sendMessage();
+
+            }
+
+        }
+
+
+
+        /* =========================================
+           FORMAT BOT ANSWER
+           
+           This makes answers easier to read.
+        ========================================= */
+
+        function formatBotAnswer(text) {
+
+
+            if (!text) {
+
+                return "No answer received.";
+            }
+
+
+            let answer =
+                escapeHTML(text);
+
+
+            /*
+               Convert numbered points:
+               1.
+               2.
+               3.
+            */
+
+            answer = answer.replace(
+                /(\d+)\.\s+/g,
+                "<br><b>$1.</b> "
+            );
+
+
+            /*
+               Convert bullet points
+            */
+
+            answer = answer.replace(
+                /\*\s+/g,
+                "<br>• "
+            );
+
+
+            /*
+               Convert markdown bold
+            */
+
+            answer = answer.replace(
+                /\*\*(.*?)\*\*/g,
+                "<strong>$1</strong>"
+            );
+
+
+            /*
+               Convert new lines
+            */
+
+            answer = answer.replace(
+                /\n/g,
+                "<br>"
+            );
+
+
+            return answer;
+
+        }
+
+
+
+        /* =========================================
+           SECURITY
+           
+           Prevent HTML entered by user from
+           being directly inserted into page.
+        ========================================= */
+
+        function escapeHTML(text) {
+
+
+            const div =
+                document.createElement("div");
+
+
+            div.textContent = text;
+
+
+            return div.innerHTML;
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>
