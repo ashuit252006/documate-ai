@@ -500,40 +500,40 @@ def upload_document():
         # READ PDF
         # ==========================================
 
-        reader = PdfReader(
-            file_path
+reader = PdfReader(file_path)
+
+extracted_text = ""
+
+print(
+    f"PDF pages: {len(reader.pages)}"
+)
+
+for page_number, page in enumerate(
+    reader.pages,
+    start=1
+):
+
+    try:
+
+        print(
+            f"Extracting page {page_number}..."
         )
 
+        text = page.extract_text()
 
-        extracted_text = ""
+        if text:
+            extracted_text += text + "\n"
 
+    except Exception as page_error:
 
-        # ==========================================
-        # EXTRACT EVERY PAGE
-        # ==========================================
+        print(
+            f"Page {page_number} extraction error:",
+            page_error
+        )
 
-        for page_number, page in enumerate(
-            reader.pages,
-            start=1
-        ):
-
-            try:
-
-                text = page.extract_text()
-
-                if text:
-
-                    extracted_text += (
-                        text + "\n"
-                    )
-
-            except Exception as page_error:
-
-                print(
-                    f"Page {page_number} extraction error:",
-                    page_error
-                )
-
+print(
+    f"Total extracted text length: {len(extracted_text)}"
+)
 
         # ==========================================
         # CHECK TEXT
