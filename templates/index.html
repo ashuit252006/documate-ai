@@ -469,134 +469,50 @@
 /* =========================================
    PDF UPLOAD
 ========================================= */
-
 async function uploadDocument() {
 
+    const fileInput = document.getElementById("documentFile");
 
-    const fileInput =
-        document.getElementById("documentFile");
-
-
-    if (fileInput.files.length === 0) {
-
-        alert(
-            "Please select a PDF file first."
-        );
-
+    if (!fileInput.files || fileInput.files.length === 0) {
+        alert("Please select a PDF file first.");
         return;
     }
 
+    const file = fileInput.files[0];
 
-    const file =
-        fileInput.files[0];
-
-
-    if (
-        !file.name
-            .toLowerCase()
-            .endsWith(".pdf")
-    ) {
-
-        alert(
-            "Please select a PDF file only."
-        );
-
+    if (!file.name.toLowerCase().endsWith(".pdf")) {
+        alert("Please select a PDF file.");
         return;
     }
 
+    const formData = new FormData();
 
-    const formData =
-        new FormData();
-
-
-    formData.append(
-        "documentFile",
-        file
-    );
-
+    // IMPORTANT: Flask expects "documentFile"
+    formData.append("documentFile", file);
 
     try {
 
+        const response = await fetch("/upload", {
+            method: "POST",
+            body: formData
+        });
 
-        const response =
-            await fetch(
-                "/upload",
-                {
-                    method: "POST",
-                    body: formData
-                }
-            );
-
-
-        const data =
-            await response.json();
-
+        const data = await response.json();
 
         if (!response.ok) {
-
-            throw new Error(
-                data.error ||
-                data.message ||
-                "Upload failed"
-            );
+            throw new Error(data.message || "Upload failed");
         }
 
+        alert(data.message);
 
-        const messages =
-            document.getElementById("messages");
+        console.log("Upload successful:", data);
 
+    } catch (error) {
 
-        messages.innerHTML += `
+        console.error("Upload Error:", error);
 
-            <div class="bot">
-
-                <div class="bot-message">
-
-                    <span class="message-label">
-                        🤖 DocuMate AI
-                    </span>
-
-                    📄 <b>${escapeHTML(file.name)}</b>
-                    uploaded successfully.
-
-                    <br><br>
-
-                    You can now ask questions about this document.
-
-                </div>
-
-            </div>
-
-        `;
-
-
-        messages.scrollTop =
-            messages.scrollHeight;
-
-
-        alert(
-            data.message ||
-            "PDF uploaded successfully."
-        );
-
-
+        alert("Upload Error: " + error.message);
     }
-
-    catch (error) {
-
-        console.error(
-            "Upload Error:",
-            error
-        );
-
-
-        alert(
-            "Upload Error: " +
-            error.message
-        );
-
-    }
-
 }
 
 
