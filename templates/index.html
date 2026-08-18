@@ -486,8 +486,6 @@ async function uploadDocument() {
     }
 
     const formData = new FormData();
-
-    // IMPORTANT: Flask expects "documentFile"
     formData.append("documentFile", file);
 
     try {
@@ -497,15 +495,55 @@ async function uploadDocument() {
             body: formData
         });
 
-        const data = await response.json();
+        const text = await response.text();
 
-        if (!response.ok) {
-            throw new Error(data.message || "Upload failed");
+        let data;
+
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            throw new Error("Server returned an invalid response.");
         }
 
-        alert(data.message);
+        if (!response.ok) {
+            throw new Error(
+                data.message ||
+                data.error ||
+                "Upload failed"
+            );
+        }
 
         console.log("Upload successful:", data);
+
+        // ==========================================
+        // SHOW UPLOADED FILE ON SCREEN
+        // ==========================================
+
+        let statusBox = document.getElementById("uploadStatus");
+
+        if (!statusBox) {
+
+            statusBox = document.createElement("div");
+
+            statusBox.id = "uploadStatus";
+
+            statusBox.style.marginTop = "12px";
+            statusBox.style.padding = "12px";
+            statusBox.style.borderRadius = "8px";
+            statusBox.style.fontSize = "14px";
+
+            fileInput.parentElement.parentElement
+                .appendChild(statusBox);
+        }
+
+        statusBox.innerHTML = `
+            <strong>✅ PDF Uploaded Successfully</strong><br>
+            📄 ${file.name}
+        `;
+
+        statusBox.style.display = "block";
+
+        alert("PDF uploaded successfully!");
 
     } catch (error) {
 
@@ -514,7 +552,6 @@ async function uploadDocument() {
         alert("Upload Error: " + error.message);
     }
 }
-
 
 /* =========================================
    SEND MESSAGE
