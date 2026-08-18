@@ -4,27 +4,17 @@
 <head>
 
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>DocuMate AI</title>
 
     <style>
 
-        /* =========================================
-           BASIC RESET
-        ========================================= */
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-
-
-        /* =========================================
-           BODY
-        ========================================= */
 
         body {
 
@@ -48,11 +38,6 @@
             padding: 25px;
         }
 
-
-        /* =========================================
-           MAIN CHAT CONTAINER
-        ========================================= */
-
         .chat-container {
 
             width: 900px;
@@ -63,7 +48,7 @@
 
             min-height: 650px;
 
-            background: #ffffff;
+            background: white;
 
             border-radius: 22px;
 
@@ -77,11 +62,6 @@
                 0 20px 60px
                 rgba(11, 31, 58, 0.22);
         }
-
-
-        /* =========================================
-           HEADER
-        ========================================= */
 
         .header {
 
@@ -101,10 +81,7 @@
             font-size: 30px;
 
             font-weight: bold;
-
-            letter-spacing: 0.5px;
         }
-
 
         .header-subtitle {
 
@@ -117,30 +94,16 @@
             color: #c9d8e8;
         }
 
-
-        /* =========================================
-           CHAT MESSAGE AREA
-        ========================================= */
-
         #messages {
 
             flex: 1;
-
-            height: auto;
 
             padding: 30px;
 
             overflow-y: auto;
 
             background: #f4f7fb;
-
-            scroll-behavior: smooth;
         }
-
-
-        /* =========================================
-           USER MESSAGE
-        ========================================= */
 
         .user {
 
@@ -150,7 +113,6 @@
 
             margin: 15px 0;
         }
-
 
         .user-message {
 
@@ -163,26 +125,12 @@
             padding: 14px 18px;
 
             border-radius:
-                18px
-                18px
-                4px
-                18px;
+                18px 18px 4px 18px;
 
             line-height: 1.6;
 
             font-size: 16px;
-
-            word-wrap: break-word;
-
-            box-shadow:
-                0 4px 12px
-                rgba(18, 59, 99, 0.18);
         }
-
-
-        /* =========================================
-           BOT MESSAGE
-        ========================================= */
 
         .bot {
 
@@ -193,22 +141,18 @@
             margin: 18px 0;
         }
 
-
         .bot-message {
 
             max-width: 82%;
 
-            background: #ffffff;
+            background: white;
 
             color: #172033;
 
             padding: 20px 22px;
 
             border-radius:
-                18px
-                18px
-                18px
-                4px;
+                18px 18px 18px 4px;
 
             border: 1px solid #d6e0eb;
 
@@ -216,19 +160,12 @@
 
             font-size: 16px;
 
-            word-wrap: break-word;
-
             white-space: pre-wrap;
 
             box-shadow:
                 0 5px 18px
                 rgba(11, 31, 58, 0.08);
         }
-
-
-        /* =========================================
-           BOT / USER LABEL
-        ========================================= */
 
         .message-label {
 
@@ -239,11 +176,6 @@
             margin-bottom: 6px;
         }
 
-
-        /* =========================================
-           UPLOAD SECTION
-        ========================================= */
-
         .document-upload {
 
             padding: 20px 30px;
@@ -252,7 +184,6 @@
 
             border-top: 1px solid #d5dfeb;
         }
-
 
         .upload-title {
 
@@ -265,7 +196,6 @@
             margin-bottom: 12px;
         }
 
-
         .upload-row {
 
             display: flex;
@@ -274,11 +204,6 @@
 
             gap: 12px;
         }
-
-
-        /* =========================================
-           FILE INPUT
-        ========================================= */
 
         .document-upload input[type="file"] {
 
@@ -295,14 +220,7 @@
             border-radius: 10px;
 
             font-size: 14px;
-
-            color: #26384d;
         }
-
-
-        /* =========================================
-           UPLOAD BUTTON
-        ========================================= */
 
         .upload-button {
 
@@ -321,22 +239,12 @@
             font-weight: bold;
 
             cursor: pointer;
-
-            transition: 0.2s;
         }
-
 
         .upload-button:hover {
 
             background: #123b63;
-
-            transform: translateY(-1px);
         }
-
-
-        /* =========================================
-           CHAT INPUT AREA
-        ========================================= */
 
         .input-area {
 
@@ -350,11 +258,6 @@
 
             border-top: 1px solid #d5dfeb;
         }
-
-
-        /* =========================================
-           MESSAGE INPUT
-        ========================================= */
 
         .input-area input[type="text"] {
 
@@ -372,29 +275,8 @@
 
             font-size: 16px;
 
-            color: #172033;
-
             background: #f8fafc;
-
-            transition: 0.2s;
         }
-
-
-        .input-area input[type="text"]:focus {
-
-            border-color: #123b63;
-
-            background: white;
-
-            box-shadow:
-                0 0 0 3px
-                rgba(18, 59, 99, 0.10);
-        }
-
-
-        /* =========================================
-           SEND BUTTON
-        ========================================= */
 
         .send-button {
 
@@ -413,72 +295,22 @@
             font-weight: bold;
 
             cursor: pointer;
-
-            transition: 0.2s;
         }
-
 
         .send-button:hover {
 
             background: #123b63;
-
-            transform: translateY(-1px);
-
-            box-shadow:
-                0 6px 15px
-                rgba(11, 31, 58, 0.22);
         }
-
-
-        /* =========================================
-           SCROLLBAR
-        ========================================= */
-
-        #messages::-webkit-scrollbar {
-
-            width: 8px;
-        }
-
-
-        #messages::-webkit-scrollbar-track {
-
-            background: #e4ebf3;
-
-            border-radius: 10px;
-        }
-
-
-        #messages::-webkit-scrollbar-thumb {
-
-            background: #91a4ba;
-
-            border-radius: 10px;
-        }
-
-
-        #messages::-webkit-scrollbar-thumb:hover {
-
-            background: #61778f;
-        }
-
-
-        /* =========================================
-           MOBILE RESPONSIVE
-        ========================================= */
 
         @media (max-width: 700px) {
 
             body {
-
                 padding: 10px;
             }
-
 
             .chat-container {
 
                 width: 100%;
-
-                max-width: 100%;
 
                 height: 95vh;
 
@@ -487,7 +319,6 @@
                 border-radius: 16px;
             }
 
-
             .header {
 
                 font-size: 23px;
@@ -495,18 +326,13 @@
                 padding: 20px;
             }
 
-
             #messages {
-
                 padding: 18px;
             }
 
-
             .document-upload {
-
                 padding: 16px;
             }
-
 
             .upload-row {
 
@@ -515,39 +341,15 @@
                 align-items: stretch;
             }
 
-
             .upload-button {
-
                 width: 100%;
             }
 
-
-            .user-message {
-
-                max-width: 88%;
-            }
-
-
-            .bot-message {
-
-                max-width: 92%;
-            }
-
-
             .input-area {
-
                 padding: 12px;
             }
 
-
-            .input-area input[type="text"] {
-
-                padding: 13px;
-            }
-
-
             .send-button {
-
                 padding: 0 18px;
             }
         }
@@ -560,462 +362,489 @@
 <body>
 
 
-    <!-- =========================================
-         MAIN CONTAINER
-    ========================================== -->
-
-    <div class="chat-container">
+<div class="chat-container">
 
 
-        <!-- =====================================
-             HEADER
-        ====================================== -->
+    <!-- HEADER -->
 
-        <div class="header">
+    <div class="header">
 
-            🤖 DocuMate AI
+        🤖 DocuMate AI
 
-            <div class="header-subtitle">
-                Intelligent Document Question & Answer System
-            </div>
+        <div class="header-subtitle">
+
+            Intelligent Document Question & Answer System
 
         </div>
 
-
-        <!-- =====================================
-             CHAT MESSAGES
-        ====================================== -->
-
-        <div id="messages"></div>
+    </div>
 
 
-        <!-- =====================================
-             PDF UPLOAD
-        ====================================== -->
+    <!-- CHAT AREA -->
 
-        <div class="document-upload">
+    <div id="messages">
 
-            <div class="upload-title">
+        <div class="bot">
 
-                📄 Upload Your Document
+            <div class="bot-message">
 
-            </div>
+                <span class="message-label">
+                    🤖 DocuMate AI
+                </span>
 
-
-            <div class="upload-row">
-
-                <input
-                    type="file"
-                    id="documentFile"
-                    name="documentFile"
-                    accept=".pdf,application/pdf"
-                >
-
-
-                <button
-                    class="upload-button"
-                    onclick="uploadDocument()"
-                >
-
-                    Upload PDF
-
-                </button>
+                Please upload a PDF document and ask me a question about it.
 
             </div>
 
         </div>
 
+    </div>
 
-        <!-- =====================================
-             CHAT INPUT
-        ====================================== -->
 
-        <div class="input-area">
+    <!-- PDF UPLOAD -->
+
+    <div class="document-upload">
+
+        <div class="upload-title">
+
+            📄 Upload Your Document
+
+        </div>
+
+
+        <div class="upload-row">
 
             <input
-                type="text"
-                id="messageInput"
-                placeholder="Ask a question about your document..."
-                onkeydown="handleEnter(event)"
+                type="file"
+                id="documentFile"
+                name="documentFile"
+                accept=".pdf,application/pdf"
             >
 
 
             <button
-                class="send-button"
-                onclick="sendMessage()"
+                class="upload-button"
+                onclick="uploadDocument()"
             >
 
-                Send
+                Upload PDF
 
             </button>
 
         </div>
 
+    </div>
+
+
+    <!-- CHAT INPUT -->
+
+    <div class="input-area">
+
+        <input
+            type="text"
+            id="messageInput"
+            placeholder="Ask a question about your document..."
+            onkeydown="handleEnter(event)"
+        >
+
+
+        <button
+            class="send-button"
+            onclick="sendMessage()"
+        >
+
+            Send
+
+        </button>
 
     </div>
 
 
-    <!-- =========================================
-         JAVASCRIPT
-    ========================================== -->
-
-    <script>
+</div>
 
 
-        /* =========================================
-           PDF UPLOAD
-        ========================================= */
-
-        async function uploadDocument() {
+<script>
 
 
-            const fileInput =
-                document.getElementById("documentFile");
+/* =========================================
+   PDF UPLOAD
+========================================= */
+
+async function uploadDocument() {
 
 
-            if (fileInput.files.length === 0) {
-
-                alert("Please select a PDF file first.");
-
-                return;
-            }
+    const fileInput =
+        document.getElementById("documentFile");
 
 
-            const file = fileInput.files[0];
+    if (fileInput.files.length === 0) {
+
+        alert(
+            "Please select a PDF file first."
+        );
+
+        return;
+    }
 
 
-            if (!file.name.toLowerCase().endsWith(".pdf")) {
-
-                alert("Please select a PDF file only.");
-
-                return;
-            }
+    const file =
+        fileInput.files[0];
 
 
-            const formData = new FormData();
+    if (
+        !file.name
+            .toLowerCase()
+            .endsWith(".pdf")
+    ) {
+
+        alert(
+            "Please select a PDF file only."
+        );
+
+        return;
+    }
 
 
-            formData.append(
-                "documentFile",
-                file
+    const formData =
+        new FormData();
+
+
+    formData.append(
+        "documentFile",
+        file
+    );
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                "/upload",
+                {
+                    method: "POST",
+                    body: formData
+                }
             );
 
 
-            try {
+        const data =
+            await response.json();
 
 
-                const response = await fetch(
-                    "/upload",
-                    {
-                        method: "POST",
-                        body: formData
-                    }
-                );
+        if (!response.ok) {
 
-
-                const data =
-                    await response.json();
-
-
-                alert(data.message);
-
-
-                if (data.success) {
-
-                    const messages =
-                        document.getElementById("messages");
-
-
-                    messages.innerHTML += `
-
-                        <div class="bot">
-
-                            <div class="bot-message">
-
-                                <span class="message-label">
-                                    🤖 DocuMate AI
-                                </span>
-
-                                📄 <b>${file.name}</b> uploaded successfully.
-
-                                <br><br>
-
-                                You can now ask questions about this document.
-
-                            </div>
-
-                        </div>
-
-                    `;
-
-
-                    messages.scrollTop =
-                        messages.scrollHeight;
-                }
-
-
-            }
-            catch (error) {
-
-
-                console.error(
-                    "Upload Error:",
-                    error
-                );
-
-
-                alert(
-                    "Something went wrong while uploading the PDF."
-                );
-            }
-
+            throw new Error(
+                data.error ||
+                data.message ||
+                "Upload failed"
+            );
         }
 
 
-
-        /* =========================================
-           SEND MESSAGE
-        ========================================= */
-
-        async function sendMessage() {
+        const messages =
+            document.getElementById("messages");
 
 
-            const input =
-                document.getElementById("messageInput");
+        messages.innerHTML += `
 
+            <div class="bot">
 
-            const message =
-                input.value.trim();
+                <div class="bot-message">
 
+                    <span class="message-label">
+                        🤖 DocuMate AI
+                    </span>
 
-            if (message === "") {
+                    📄 <b>${escapeHTML(file.name)}</b>
+                    uploaded successfully.
 
-                return;
-            }
+                    <br><br>
 
-
-            const messages =
-                document.getElementById("messages");
-
-
-            /* USER MESSAGE */
-
-            messages.innerHTML += `
-
-                <div class="user">
-
-                    <div class="user-message">
-
-                        <span class="message-label">
-                            You
-                        </span>
-
-                        ${escapeHTML(message)}
-
-                    </div>
+                    You can now ask questions about this document.
 
                 </div>
 
-            `;
+            </div>
+
+        `;
 
 
-            input.value = "";
+        messages.scrollTop =
+            messages.scrollHeight;
 
 
-            messages.scrollTop =
-                messages.scrollHeight;
+        alert(
+            data.message ||
+            "PDF uploaded successfully."
+        );
 
 
-            try {
+    }
+
+    catch (error) {
+
+        console.error(
+            "Upload Error:",
+            error
+        );
 
 
-                const response =
-                    await fetch(
-                        "/chat",
-                        {
-                            method: "POST",
+        alert(
+            "Upload Error: " +
+            error.message
+        );
 
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
+    }
 
-                            body: JSON.stringify({
-                                message: message
-                            })
-                        }
-                    );
+}
 
 
-                const data =
-                    await response.json();
+/* =========================================
+   SEND MESSAGE
+========================================= */
+
+async function sendMessage() {
 
 
-                /* BOT MESSAGE */
-
-                messages.innerHTML += `
-
-                    <div class="bot">
-
-                        <div class="bot-message">
-
-                            <span class="message-label">
-                                🤖 DocuMate AI
-                            </span>
-
-                            ${formatBotAnswer(data.reply)}
-
-                        </div>
-
-                    </div>
-
-                `;
+    const input =
+        document.getElementById("messageInput");
 
 
-                messages.scrollTop =
-                    messages.scrollHeight;
+    const message =
+        input.value.trim();
 
 
-            }
-            catch (error) {
+    if (message === "") {
+
+        return;
+
+    }
 
 
-                console.error(
-                    "Chat Error:",
-                    error
-                );
+    const messages =
+        document.getElementById("messages");
 
 
-                messages.innerHTML += `
+    /* USER MESSAGE */
 
-                    <div class="bot">
+    messages.innerHTML += `
 
-                        <div class="bot-message">
+        <div class="user">
 
-                            <span class="message-label">
-                                🤖 DocuMate AI
-                            </span>
+            <div class="user-message">
 
-                            Sorry, something went wrong.
+                <span class="message-label">
+                    You
+                </span>
 
-                        </div>
+                ${escapeHTML(message)}
 
-                    </div>
+            </div>
 
-                `;
+        </div>
 
-            }
+    `;
+
+
+    input.value = "";
+
+
+    messages.scrollTop =
+        messages.scrollHeight;
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                "/chat",
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body: JSON.stringify({
+
+                        message:
+                            message
+
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        /* CHECK BACKEND ERROR */
+
+        if (!response.ok) {
+
+            throw new Error(
+
+                data.error ||
+                data.reply ||
+                `Server error: ${response.status}`
+
+            );
 
         }
 
 
+        /* BOT RESPONSE */
 
-        /* =========================================
-           ENTER KEY
-        ========================================= */
+        messages.innerHTML += `
 
-        function handleEnter(event) {
+            <div class="bot">
 
-            if (event.key === "Enter") {
+                <div class="bot-message">
 
-                sendMessage();
+                    <span class="message-label">
+                        🤖 DocuMate AI
+                    </span>
 
-            }
+                    ${formatBotAnswer(
+                        data.reply
+                    )}
 
-        }
+                </div>
 
+            </div>
 
-
-        /* =========================================
-           FORMAT BOT ANSWER
-           
-           This makes answers easier to read.
-        ========================================= */
-
-        function formatBotAnswer(text) {
+        `;
 
 
-            if (!text) {
-
-                return "No answer received.";
-            }
+        messages.scrollTop =
+            messages.scrollHeight;
 
 
-            let answer =
-                escapeHTML(text);
+    }
 
 
-            /*
-               Convert numbered points:
-               1.
-               2.
-               3.
-            */
-
-            answer = answer.replace(
-                /(\d+)\.\s+/g,
-                "<br><b>$1.</b> "
-            );
+    catch (error) {
 
 
-            /*
-               Convert bullet points
-            */
-
-            answer = answer.replace(
-                /\*\s+/g,
-                "<br>• "
-            );
+        console.error(
+            "Chat Error:",
+            error
+        );
 
 
-            /*
-               Convert markdown bold
-            */
+        messages.innerHTML += `
 
-            answer = answer.replace(
-                /\*\*(.*?)\*\*/g,
-                "<strong>$1</strong>"
-            );
+            <div class="bot">
 
+                <div class="bot-message">
 
-            /*
-               Convert new lines
-            */
+                    <span class="message-label">
+                        🤖 DocuMate AI
+                    </span>
 
-            answer = answer.replace(
-                /\n/g,
-                "<br>"
-            );
+                    ❌ Error:
+                    ${escapeHTML(
+                        error.message
+                    )}
 
+                </div>
 
-            return answer;
+            </div>
 
-        }
+        `;
 
 
+        messages.scrollTop =
+            messages.scrollHeight;
 
-        /* =========================================
-           SECURITY
-           
-           Prevent HTML entered by user from
-           being directly inserted into page.
-        ========================================= */
+    }
 
-        function escapeHTML(text) {
+}
 
 
-            const div =
-                document.createElement("div");
+/* =========================================
+   ENTER KEY
+========================================= */
+
+function handleEnter(event) {
+
+    if (
+        event.key === "Enter"
+    ) {
+
+        sendMessage();
+
+    }
+
+}
 
 
-            div.textContent = text;
+/* =========================================
+   FORMAT BOT ANSWER
+========================================= */
+
+function formatBotAnswer(text) {
 
 
-            return div.innerHTML;
+    if (!text) {
 
-        }
+        return "No answer received.";
 
-    </script>
+    }
+
+
+    let answer =
+        escapeHTML(text);
+
+
+    answer =
+        answer.replace(
+            /\*\*(.*?)\*\*/g,
+            "<strong>$1</strong>"
+        );
+
+
+    answer =
+        answer.replace(
+            /\n/g,
+            "<br>"
+        );
+
+
+    return answer;
+
+}
+
+
+/* =========================================
+   SECURITY
+========================================= */
+
+function escapeHTML(text) {
+
+
+    const div =
+        document.createElement("div");
+
+
+    div.textContent =
+        text;
+
+
+    return div.innerHTML;
+
+}
+
+
+</script>
 
 
 </body>

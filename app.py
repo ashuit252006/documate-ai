@@ -1,4 +1,5 @@
 import os
+import json
 
 import firebase_admin
 from firebase_admin import credentials, firestore
@@ -21,24 +22,42 @@ load_dotenv()
 # FIREBASE CONNECTION
 # ==========================================
 
-# ==========================================
-# FIREBASE CONNECTION
-# ==========================================
+try:
 
-firebase_credentials = os.getenv("FIREBASE_CREDENTIALS_JSON")
-
-if firebase_credentials:
-    cred = credentials.Certificate(
-        json.loads(firebase_credentials)
+    firebase_credentials = os.getenv(
+        "FIREBASE_CREDENTIALS_JSON"
     )
-else:
-    cred = credentials.Certificate("firebase-key.json")
 
-firebase_admin.initialize_app(cred)
+    if firebase_credentials:
 
-db = firestore.client()
+        cred = credentials.Certificate(
+            json.loads(firebase_credentials)
+        )
 
-print("Firebase Firestore connected successfully!")
+    else:
+
+        cred = credentials.Certificate(
+            "firebase-key.json"
+        )
+
+    if not firebase_admin._apps:
+
+        firebase_admin.initialize_app(cred)
+
+    db = firestore.client()
+
+    print(
+        "Firebase Firestore connected successfully!"
+    )
+
+except Exception as e:
+
+    print(
+        "Firebase connection error:",
+        e
+    )
+
+    db = None
 
 
 # ==========================================
@@ -47,21 +66,31 @@ print("Firebase Firestore connected successfully!")
 
 app = Flask(__name__)
 
-# Stores the currently uploaded PDF text
+
+# ==========================================
+# DOCUMENT VARIABLES
+# ==========================================
+
 document_text = ""
 
-# Stores the currently uploaded PDF name
 document_name = ""
 
 
 # ==========================================
+# ==========================================
 # GEMINI CONNECTION
 # ==========================================
 
+from google import genai
+import os
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
 client = genai.Client(
-    api_key=os.getenv("GEMINI_API_KEY")
+    api_key=GEMINI_API_KEY
 )
 
+print("Gemini API connected successfully!")
 
 # ==========================================
 # UPLOAD FOLDER
@@ -69,9 +98,14 @@ client = genai.Client(
 
 UPLOAD_FOLDER = "uploads"
 
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(
+    UPLOAD_FOLDER,
+    exist_ok=True
+)
 
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config[
+    "UPLOAD_FOLDER"
+] = UPLOAD_FOLDER
 
 
 # ==========================================
@@ -81,86 +115,131 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 @app.route("/")
 def home():
 
-    return render_template("index.html")
+    return render_template(
+        "index.html"
+    )
 
 
 # ==========================================
 # CHAT
 # ==========================================
 
-@app.route("/chat", methods=["POST"])
+@app.route(
+    "/chat",
+    methods=["POST"]
+)
 def chat():
 
     global document_text
     global document_name
 
-    # ==========================================
-    # GET USER MESSAGE
-    # ==========================================
-
-    data = request.get_json()
-
-    if not data:
-
-        return jsonify({
-            "reply": "Invalid request."
-        }), 400
-
-    user_message = data.get("message", "").strip()
-
-    # ==========================================
-    # CHECK MESSAGE
-    # ==========================================
-
-    if not user_message:
-
-        return jsonify({
-            "reply": "Please enter a message."
-        }), 400
-
-    # ==========================================
-    # CHECK DOCUMENT
-    # ==========================================
-
-    if not document_text:
-
-        return jsonify({
-            "reply": "Please upload a PDF document first."
-        })
-
 
     try:
+
+        # ==========================================
+        # GET JSON DATA
+        # ==========================================
+
+        data = request.get_json()
+
+
+        if not data:
+
+            return jsonify({
+
+                "error":
+                    "Invalid request.",
+
+                "reply":
+                    "Invalid request."
+
+            }), 400
+
+
+        # ==========================================
+        # GET USER QUESTION
+        # ==========================================
+
+        user_message = data.get(
+            "message",
+            ""
+        ).strip()
+
+
+        if not user_message:
+
+            return jsonify({
+
+                "error":
+                    "Please enter a question.",
+
+                "reply":
+                    "Please enter a question."
+
+            }), 400
+
+
+        # ==========================================
+        # CHECK GEMINI
+        # ==========================================
+
+        if not client:
+
+            return jsonify({
+
+                "error":
+                    "Gemini API is not configured. Please check GEMINI_API_KEY.",
+
+                "reply":
+                    "Gemini API is not configured. Please check GEMINI_API_KEY."
+
+            }), 500
+
+
+        # ==========================================
+        # CHECK DOCUMENT
+        # ==========================================
+
+        if not document_text:
+
+            return jsonify({
+
+                "error":
+                    "No document uploaded.",
+
+                "reply":
+                    "Please upload a PDF document first."
+
+            }), 400
+
 
         # ==========================================
         # GEMINI PROMPT
         # ==========================================
 
         prompt = f"""
-You are DocuMate AI, a document question-answering assistant.
+You are DocuMate AI, an intelligent document question-answering assistant.
 
-Your job is to answer the user's question using ONLY the information
-contained in the uploaded document.
+Your task is to answer the user's question using ONLY the uploaded document.
 
 IMPORTANT RULES:
 
-1. Use only the uploaded document as the source.
+1. Use only information contained in the uploaded document.
 2. Do not use outside knowledge.
 3. Do not invent or make up information.
 4. Understand the meaning of the user's question.
-5. If the user's wording is slightly different from the wording
-   in the document, look for closely related terms or topics.
-6. If a closely related topic exists in the document, use that
-   information to answer the question.
-7. If the document uses a different but related term, mention
-   the term used in the document.
-8. If the answer is not available anywhere in the document,
-   say exactly:
+5. If the user's wording is slightly different from the wording in the document,
+   search for closely related words, concepts, and topics.
+6. If a related topic exists in the document, use that information.
+7. If the document uses a different term, mention the term used in the document.
+8. If the answer cannot be found in the document, say:
 
 "I couldn't find the answer in the uploaded document."
 
-9. Keep answers clear and easy to understand.
+9. Keep the answer clear and easy to understand.
 10. Use numbered points when explaining multiple items.
-11. Do not provide information that is not supported by the document.
+11. Do not provide unsupported information.
+12. Answer directly without unnecessary introduction.
 
 DOCUMENT NAME:
 {document_name}
@@ -174,51 +253,125 @@ USER QUESTION:
 
 
         # ==========================================
-        # GEMINI API
+        # CALL GEMINI
         # ==========================================
 
-        response = client.models.generate_content(
-            model="gemini-3.5-flash",
-            contents=prompt
+        print(
+            "Sending question to Gemini..."
         )
 
+        response = client.models.generate_content(
+
+            model="gemini-3.6-flash",
+
+            contents=prompt
+
+        )
+
+
+        # ==========================================
+        # GET GEMINI RESPONSE
+        # ==========================================
+
         bot_reply = response.text
+
+
+        if not bot_reply:
+
+            bot_reply = (
+                "I couldn't generate an answer."
+            )
+
+
+        print(
+            "Gemini response received successfully!"
+        )
 
 
         # ==========================================
         # SAVE CHAT HISTORY TO FIREBASE
         # ==========================================
 
-        db.collection("chat_history").add({
+        if db:
 
-            "question": user_message,
+            try:
 
-            "answer": bot_reply,
+                db.collection(
+                    "chat_history"
+                ).add({
 
-            "document_name": document_name,
+                    "question":
+                        user_message,
 
-            "timestamp": firestore.SERVER_TIMESTAMP
+                    "answer":
+                        bot_reply,
 
-        })
+                    "document_name":
+                        document_name,
 
-        print("Chat history saved to Firebase!")
+                    "timestamp":
+                        firestore.SERVER_TIMESTAMP
+
+                })
+
+                print(
+                    "Chat history saved to Firebase!"
+                )
+
+            except Exception as firebase_error:
+
+                print(
+                    "Firebase chat history error:",
+                    firebase_error
+                )
 
 
         # ==========================================
-        # RETURN ANSWER TO FRONTEND
+        # RETURN ANSWER
         # ==========================================
 
         return jsonify({
-            "reply": bot_reply
-        })
 
+            "success": True,
+
+            "reply": bot_reply
+
+        }), 200
+
+
+    # ==========================================
+    # ERROR HANDLING
+    # ==========================================
 
     except Exception as e:
 
-        print("Gemini/Firebase Error:", e)
+        print(
+            "================================="
+        )
+
+        print(
+            "CHAT ERROR:"
+        )
+
+        print(
+            repr(e)
+        )
+
+        print(
+            "================================="
+        )
+
 
         return jsonify({
-            "reply": "Sorry, something went wrong."
+
+            "success": False,
+
+            "error":
+                str(e),
+
+            "reply":
+                "Chatbot error: " + str(e)
+
         }), 500
 
 
@@ -226,115 +379,178 @@ USER QUESTION:
 # PDF UPLOAD
 # ==========================================
 
-@app.route("/upload", methods=["POST"])
+@app.route(
+    "/upload",
+    methods=["POST"]
+)
 def upload_document():
 
     global document_text
     global document_name
 
 
-    # ==========================================
-    # CHECK FILE
-    # ==========================================
-
-    if "documentFile" not in request.files:
-
-        return jsonify({
-            "success": False,
-            "message": "No document was selected."
-        }), 400
-
-
-    file = request.files["documentFile"]
-
-
-    # ==========================================
-    # CHECK FILE NAME
-    # ==========================================
-
-    if file.filename == "":
-
-        return jsonify({
-            "success": False,
-            "message": "No document was selected."
-        }), 400
-
-
-    # ==========================================
-    # CHECK PDF
-    # ==========================================
-
-    if not file.filename.lower().endswith(".pdf"):
-
-        return jsonify({
-            "success": False,
-            "message": "Only PDF files are allowed."
-        }), 400
-
-
-    # ==========================================
-    # SECURE FILE NAME
-    # ==========================================
-
-    filename = secure_filename(file.filename)
-
-    document_name = filename
-
-
-    # ==========================================
-    # CREATE FILE PATH
-    # ==========================================
-
-    file_path = os.path.join(
-        app.config["UPLOAD_FOLDER"],
-        filename
-    )
-
-
-    # ==========================================
-    # SAVE PDF
-    # ==========================================
-
-    file.save(file_path)
-
-    print(
-        f"PDF uploaded successfully: {filename}"
-    )
-
-
-    # ==========================================
-    # PDF TEXT EXTRACTION
-    # ==========================================
-
     try:
 
-        reader = PdfReader(file_path)
+        # ==========================================
+        # CHECK FILE
+        # ==========================================
+
+        if "documentFile" not in request.files:
+
+            return jsonify({
+
+                "success": False,
+
+                "error":
+                    "No document was selected.",
+
+                "message":
+                    "No document was selected."
+
+            }), 400
+
+
+        file = request.files[
+            "documentFile"
+        ]
+
+
+        # ==========================================
+        # CHECK FILE NAME
+        # ==========================================
+
+        if file.filename == "":
+
+            return jsonify({
+
+                "success": False,
+
+                "error":
+                    "No document was selected.",
+
+                "message":
+                    "No document was selected."
+
+            }), 400
+
+
+        # ==========================================
+        # CHECK PDF
+        # ==========================================
+
+        if not file.filename.lower().endswith(
+            ".pdf"
+        ):
+
+            return jsonify({
+
+                "success": False,
+
+                "error":
+                    "Only PDF files are allowed.",
+
+                "message":
+                    "Only PDF files are allowed."
+
+            }), 400
+
+
+        # ==========================================
+        # SECURE FILE NAME
+        # ==========================================
+
+        filename = secure_filename(
+            file.filename
+        )
+
+
+        document_name = filename
+
+
+        # ==========================================
+        # FILE PATH
+        # ==========================================
+
+        file_path = os.path.join(
+
+            app.config[
+                "UPLOAD_FOLDER"
+            ],
+
+            filename
+
+        )
+
+
+        # ==========================================
+        # SAVE PDF
+        # ==========================================
+
+        file.save(
+            file_path
+        )
+
+
+        print(
+            f"PDF uploaded successfully: {filename}"
+        )
+
+
+        # ==========================================
+        # READ PDF
+        # ==========================================
+
+        reader = PdfReader(
+            file_path
+        )
+
 
         extracted_text = ""
 
 
         # ==========================================
-        # READ EVERY PAGE
+        # EXTRACT EVERY PAGE
         # ==========================================
 
-        for page in reader.pages:
+        for page_number, page in enumerate(
+            reader.pages,
+            start=1
+        ):
 
-            text = page.extract_text()
+            try:
 
-            if text:
+                text = page.extract_text()
 
-                extracted_text += text + "\n"
+                if text:
+
+                    extracted_text += (
+                        text + "\n"
+                    )
+
+            except Exception as page_error:
+
+                print(
+                    f"Page {page_number} extraction error:",
+                    page_error
+                )
 
 
         # ==========================================
-        # CHECK EXTRACTED TEXT
+        # CHECK TEXT
         # ==========================================
 
         if not extracted_text.strip():
 
             return jsonify({
+
                 "success": False,
-                "message": "PDF uploaded, but no readable text was found."
+
+                "error":
+                    "PDF uploaded, but no readable text was found.",
+
+                "message":
+                    "PDF uploaded, but no readable text was found."
+
             }), 400
 
 
@@ -342,7 +558,9 @@ def upload_document():
         # STORE DOCUMENT TEXT
         # ==========================================
 
-        document_text = extracted_text
+        document_text = (
+            extracted_text.strip()
+        )
 
 
         print(
@@ -350,74 +568,113 @@ def upload_document():
         )
 
         print(
+            "Document:",
+            document_name
+        )
+
+        print(
+            "Text length:",
+            len(document_text)
+        )
+
+        print(
             "First 1000 characters:"
         )
 
         print(
-            extracted_text[:1000]
+            document_text[:1000]
         )
 
+
+        # ==========================================
+        # SAVE DOCUMENT INFO TO FIREBASE
+        # ==========================================
+
+        if db:
+
+            try:
+
+                db.collection(
+                    "documents"
+                ).add({
+
+                    "document_name":
+                        filename,
+
+                    "text_length":
+                        len(document_text),
+
+                    "uploaded_at":
+                        firestore.SERVER_TIMESTAMP
+
+                })
+
+                print(
+                    "Document information saved to Firebase!"
+                )
+
+            except Exception as firebase_error:
+
+                print(
+                    "Firebase document error:",
+                    firebase_error
+                )
+
+
+        # ==========================================
+        # RETURN SUCCESS
+        # ==========================================
+
+        return jsonify({
+
+            "success": True,
+
+            "message":
+                f"{filename} uploaded and processed successfully!",
+
+            "filename":
+                filename,
+
+            "text_length":
+                len(document_text)
+
+        }), 200
+
+
+    # ==========================================
+    # UPLOAD ERROR
+    # ==========================================
 
     except Exception as e:
 
         print(
-            "PDF Extraction Error:",
-            e
+            "================================="
         )
+
+        print(
+            "UPLOAD ERROR:"
+        )
+
+        print(
+            repr(e)
+        )
+
+        print(
+            "================================="
+        )
+
 
         return jsonify({
 
             "success": False,
 
+            "error":
+                str(e),
+
             "message":
-                "PDF uploaded, but text extraction failed."
+                "PDF upload failed: " + str(e)
 
         }), 500
-
-
-    # ==========================================
-    # SAVE DOCUMENT INFORMATION TO FIREBASE
-    # ==========================================
-
-    try:
-
-        db.collection("documents").add({
-
-            "document_name": filename,
-
-            "text_length": len(document_text),
-
-            "uploaded_at": firestore.SERVER_TIMESTAMP
-
-        })
-
-        print(
-            "Document information saved to Firebase!"
-        )
-
-
-    except Exception as e:
-
-        print(
-            "Firebase Document Error:",
-            e
-        )
-
-
-    # ==========================================
-    # RESPONSE
-    # ==========================================
-
-    return jsonify({
-
-        "success": True,
-
-        "message":
-            f"{filename} uploaded and processed successfully!",
-
-        "filename": filename
-
-    })
 
 
 # ==========================================
@@ -427,5 +684,11 @@ def upload_document():
 if __name__ == "__main__":
 
     app.run(
-        debug=True
+
+        debug=True,
+
+        host="127.0.0.1",
+
+        port=5000
+
     )
